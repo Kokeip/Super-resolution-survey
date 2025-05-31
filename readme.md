@@ -5,22 +5,22 @@
 
 |类别|模型|核心机制|是否开源|推荐数据集|评估指标|GitHub链接|
 |---|---|---|---|---|---|---|
-|**基准模型**|Bicubic|三次插值|✅（内置）|Set5 / DIV2K|PSNR / SSIM|-|
-||SRCNN|三层卷积|✅|Set5 / DIV2K|PSNR / SSIM|[GitHub](https://github.com/yjn870/SRCNN-pytorch)|
-||FSRCNN|后上采样 + 轻量结构|✅|Set5 / DIV2K|PSNR / SSIM|[GitHub](https://github.com/yjn870/FSRCNN-pytorch)|
-||ESPCN|Sub-pixel layer|✅|Set5 / DIV2K|PSNR / SSIM|[GitHub](https://github.com/twhui/DCSCN-Tensorflow)|
-|**残差网络**|VDSR|残差学习 + 深层CNN|✅|DIV2K|PSNR / SSIM|[GitHub](https://github.com/twtygqyy/pytorch-vdsr)|
-||RDN|残差密集连接|✅|DIV2K|PSNR / SSIM|[GitHub](https://github.com/yulunzhang/RCAN)|
-||RCAN|残差通道注意力网络|✅|DIV2K|PSNR / SSIM|[GitHub](https://github.com/yulunzhang/RCAN)|
-||DRLN|多级残差 + 拉普拉斯注意力|✅|DIV2K|PSNR / SSIM|[GitHub](https://github.com/IVIPLab/DRLN)|
-|**注意力机制**|SwinIR|Swin Transformer + LayerNorm|✅|DIV2K|PSNR / SSIM / LPIPS|[GitHub](https://github.com/JingyunLiang/SwinIR)|
-||HAN|多层注意力融合|✅|DIV2K|PSNR / SSIM|[GitHub](https://github.com/Meituan-AutoML/HAN)|
-|**轻量模型**|IMDN|信息蒸馏模块|✅|DIV2K|PSNR / SSIM|[GitHub](https://github.com/zeyuanzhang/IMDN-pytorch)|
-||CARN|轻量残差块|✅|DIV2K|PSNR / SSIM|[GitHub](https://github.com/nmhkahn/CARN-pytorch)|
-|**GAN类**|SRGAN|感知损失 + 对抗训练|✅|DIV2K|PSNR / SSIM / LPIPS / MOS|[GitHub](https://github.com/tensorlayer/srgan)|
-||ESRGAN|Residual-in-Residual + GAN改进|✅|DIV2K+Flickr2K|PSNR / SSIM / LPIPS / MOS|[GitHub](https://github.com/xinntao/ESRGAN)|
-|**扩散模型**|SR3|DDPM + 迭代去噪|✅|FFHQ / DIV2K|LPIPS / MOS|[GitHub](https://github.com/Janspiry/Image-Super-Resolution-via-Iterative-Refinement)|
-|**无监督模型**|ZSSR|图像自监督训练|✅|自建图像|PSNR / SSIM|[GitHub](https://github.com/assafshocher/ZSSR)|
+|**基准模型**|Bicubic(1)|三次插值|✅（内置）|Set5 / DIV2K|PSNR / SSIM|-|
+||SRCNN(2)|三层卷积|✅|Set5 / DIV2K|PSNR / SSIM|[GitHub](https://github.com/yjn870/SRCNN-pytorch)|
+||FSRCNN(2)|后上采样 + 轻量结构|✅|Set5 / DIV2K|PSNR / SSIM|[GitHub](https://github.com/yjn870/FSRCNN-pytorch)|
+||ESPCN(2)|Sub-pixel layer|✅|Set5 / DIV2K|PSNR / SSIM|[GitHub](https://github.com/twhui/DCSCN-Tensorflow)|
+|**残差网络**|VDSR(2)|残差学习 + 深层CNN|✅|DIV2K|PSNR / SSIM|[GitHub](https://github.com/twtygqyy/pytorch-vdsr)|
+||RDN(2)|残差密集连接|✅|DIV2K|PSNR / SSIM|[GitHub](https://github.com/yulunzhang/RCAN)|
+||RCAN(1)|残差通道注意力网络|✅|DIV2K|PSNR / SSIM|[GitHub](https://github.com/yulunzhang/RCAN)|
+||DRLN(1)|多级残差 + 拉普拉斯注意力|✅|DIV2K|PSNR / SSIM|[GitHub](https://github.com/IVIPLab/DRLN)|
+|**注意力机制**|SwinIR(3)|Swin Transformer + LayerNorm|✅|DIV2K|PSNR / SSIM / LPIPS|[GitHub](https://github.com/JingyunLiang/SwinIR)|
+||HAN(3)|多层注意力融合|✅|DIV2K|PSNR / SSIM|[GitHub](https://github.com/Meituan-AutoML/HAN)|
+|**轻量模型**|IMDN(1)|信息蒸馏模块|✅|DIV2K|PSNR / SSIM|[GitHub](https://github.com/zeyuanzhang/IMDN-pytorch)|
+||CARN(1)|轻量残差块|✅|DIV2K|PSNR / SSIM|[GitHub](https://github.com/nmhkahn/CARN-pytorch)|
+|**GAN类**|SRGAN(1)|感知损失 + 对抗训练|✅|DIV2K|PSNR / SSIM / LPIPS / MOS|[GitHub](https://github.com/tensorlayer/srgan)|
+||ESRGAN(1)|Residual-in-Residual + GAN改进|✅|DIV2K+Flickr2K|PSNR / SSIM / LPIPS / MOS|[GitHub](https://github.com/xinntao/ESRGAN)|
+|**扩散模型**|SR3(3)|DDPM + 迭代去噪|✅|FFHQ / DIV2K|LPIPS / MOS|[GitHub](https://github.com/Janspiry/Image-Super-Resolution-via-Iterative-Refinement)|
+|**无监督模型**|ZSSR(1)|图像自监督训练|✅|自建图像|PSNR / SSIM|[GitHub](https://github.com/assafshocher/ZSSR)|
 
 ---
 
