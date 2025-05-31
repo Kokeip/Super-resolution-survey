@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 
 # 从单独的文件中导入上采样方法
 from methods.bicubic_method import bicubic_upscale
-from methods.rcan_method import rcan_upscale
+from methods.rcan_method import rcan_upscale # 导入RCAN上采样方法
 
 # 初始化LPIPS模型
 loss_fn_alex = lpips.LPIPS(net='alex')  # 使用AlexNet作为特征提取器
@@ -22,10 +22,10 @@ loss_fn_alex = lpips.LPIPS(net='alex')  # 使用AlexNet作为特征提取器
 # ========================
 SCALE = 4  # 超分倍数
 MODELS = [
-    'RCAN', # 暂时只保留Bicubic，其他模型需要单独实现并导入
-    #'Bicubic' # 添加Bicubic模型，以便进行对比
-    # 'SRCNN', 'FSRCNN', 'ESPCN', 'VDSR', 
-    # 'RDN', 'RCAN', 'DRLN', 'SwinIR', 'HAN', 
+    #'Bicubic',
+    'RCAN' # 添加RCAN模型
+    # 'SRCNN', 'FSRCNN', 'ESPCN', 'VDSR',
+    # 'RDN', 'DRLN', 'SwinIR', 'HAN',
     # 'IMDN', 'CARN', 'SRGAN', 'ESRGAN', 'SR3', 'ZSSR'
 ]
 DATASETS = {
@@ -134,38 +134,27 @@ def test_model_on_dataset(model_name, dataset_name, scale=4, save_visuals=False)
     results = []
     times = []
     
-    # 定义图像大小阈值和 patch 大小
-    IMAGE_SIZE_THRESHOLD = 200
-    PATCH_SIZE = 128
-    OVERLAP_SIZE = 16 # 示例重叠大小，可以根据需要调整
-    
     # 创建可视化目录
     if save_visuals:
         visual_dir = f"results/visuals/{dataset_name}/{model_name}"
         os.makedirs(visual_dir, exist_ok=True)
     
-    for hr_path, lr_path in tqdm(zip(hr_files, lr_files), 
-                                desc=f"{model_name} on {dataset_name}", 
+    for hr_path, lr_path in tqdm(zip(hr_files, lr_files),
+                                desc=f"{model_name} on {dataset_name}",
                                 total=len(hr_files)):
         # 读取图像
         hr_img = cv2.imread(hr_path)
         lr_img = cv2.imread(lr_path)
         
         # 获取图像尺寸
-        h, w, _ = lr_img.shape
+        # h, w, _ = lr_img.shape # 不再根据图像大小选择处理方式，此行可移除或注释
         
         # 模型推理
         start_time = time.time()
         
-        # 根据图像大小选择处理方式
-        if h < IMAGE_SIZE_THRESHOLD and w < IMAGE_SIZE_THRESHOLD:
-            # 整图处理
-            print(f"处理图像: {os.path.basename(lr_path)} (整图)")
-            sr_img = apply_sr_model(lr_img, model_name, scale)
-        else:
-            # Patch 处理
-            print(f"处理图像: {os.path.basename(lr_path)} (Patch)")
-            sr_img = process_image_with_patches(lr_img, model_name, scale, PATCH_SIZE, OVERLAP_SIZE)
+        # 直接进行整图处理
+        print(f"处理图像: {os.path.basename(lr_path)}")
+        sr_img = apply_sr_model(lr_img, model_name, scale)
             
         inference_time = time.time() - start_time
         times.append(inference_time)
@@ -195,83 +184,13 @@ def apply_sr_model(img, model_name, scale):
     """根据模型名称应用超分辨率模型"""
     if model_name == 'Bicubic':
         return bicubic_upscale(img, scale)
-    elif model_name == 'RCAN':
+    elif model_name == 'RCAN': # 添加RCAN模型支持
         return rcan_upscale(img, scale)
     elif model_name == 'SRCNN':
         raise NotImplementedError("SRCNN model is not yet implemented. Please implement it in a separate file.")
     # 添加其他模型的分支...
     else:
         raise ValueError(f"Unsupported model name: {model_name}. Only 'Bicubic' and 'RCAN' are supported for now.")
-
-def process_image_with_patches(lr_img, model_name, scale, patch_size, overlap_size):
-    """使用 patch 处理图像并进行重叠融合"""
-    h_lr, w_lr, _ = lr_img.shape
-    h_sr, w_sr = h_lr * scale, w_lr * scale
-
-    # 初始化最终的SR图像和权重图
-    sr_img_final = np.zeros((h_sr, w_sr, 3), dtype=np.float32)
-    weight_map = np.zeros((h_sr, w_sr, 1), dtype=np.float32)
-
-    # 计算步长
-    stride = patch_size - overlap_size
-
-    # 生成一个 patch 的权重图
-    # 这里使用一个简单的线性衰减权重，中心最大，边缘最小
-    patch_weight = np.zeros((patch_size * scale, patch_size * scale, 1), dtype=np.float32)
-    for i in range(patch_size * scale):
-        for j in range(patch_size * scale):
-            dist_x = min(i, patch_size * scale - 1 - i)
-            dist_y = min(j, patch_size * scale - 1 - j)
-            patch_weight[i, j] = min(dist_x, dist_y) + 1 # 距离边缘越近，权重越小，但至少为1
-    patch_weight = patch_weight / np.max(patch_weight) # 归一化到0-1
-
-    # 遍历所有 patch
-    for y in range(0, h_lr, stride):
-        for x in range(0, w_lr, stride):
-            # 确定当前 patch 的区域
-            y_end = min(y + patch_size, h_lr)
-            x_end = min(x + patch_size, w_lr)
-            
-            # 提取 LR patch
-            lr_patch = lr_img[y:y_end, x:x_end, :]
-
-            # 如果 patch 小于指定大小，进行 padding
-            padded_lr_patch = np.zeros((patch_size, patch_size, 3), dtype=lr_img.dtype)
-            padded_lr_patch[:lr_patch.shape[0], :lr_patch.shape[1], :] = lr_patch
-
-            # 对 patch 进行超分
-            sr_patch = apply_sr_model(padded_lr_patch, model_name, scale)
-
-            # 计算 SR patch 在最终图像中的位置
-            sr_y_start = y * scale
-            sr_x_start = x * scale
-            sr_y_end = sr_y_start + sr_patch.shape[0]
-            sr_x_end = sr_x_start + sr_patch.shape[1]
-
-            # 将 SR patch 及其权重叠加到最终图像和权重图中
-            # 注意：这里需要处理 sr_patch 实际大小可能小于 (patch_size * scale) 的情况
-            current_sr_patch_h = min(sr_patch.shape[0], h_sr - sr_y_start)
-            current_sr_patch_w = min(sr_patch.shape[1], w_sr - sr_x_start)
-
-            sr_img_final[sr_y_start:sr_y_start + current_sr_patch_h,
-                         sr_x_start:sr_x_start + current_sr_patch_w, :] += \
-                sr_patch[:current_sr_patch_h, :current_sr_patch_w, :] * \
-                patch_weight[:current_sr_patch_h, :current_sr_patch_w, :]
-
-            weight_map[sr_y_start:sr_y_start + current_sr_patch_h,
-                       sr_x_start:sr_x_start + current_sr_patch_w, :] += \
-                patch_weight[:current_sr_patch_h, :current_sr_patch_w, :]
-
-    # 避免除以零，将权重图中小于一个很小的值的地方设置为1
-    weight_map[weight_map == 0] = 1e-6
-
-    # 加权平均融合
-    sr_img_final = sr_img_final / weight_map
-    
-    # 裁剪到原始 HR 图像的尺寸，因为 padding 可能会导致尺寸略大
-    sr_img_final = sr_img_final[:h_sr, :w_sr, :]
-
-    return sr_img_final.astype(np.uint8)
 
 
 def run_full_experiment(save_csv=True, save_visuals=False):
