@@ -194,7 +194,11 @@ def rcan_upscale(lr_image_path, scale_factor=4):
     }
     
     model = RCAN(args).to(device)
-
+    
+    if torch.cuda.device_count() > 1:
+            print(f"Using {torch.cuda.device_count()} GPUs!")
+            model = nn.DataParallel(model)
+    
     if model_path and os.path.exists(model_path):
         state_dict = torch.load(model_path, map_location=device)
         new_state_dict = {}
