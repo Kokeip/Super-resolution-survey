@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 
 # 从单独的文件中导入上采样方法
 from methods.bicubic_method import bicubic_upscale
+from methods.rcan_method import rcan_upscale
 
 # 初始化LPIPS模型
 loss_fn_alex = lpips.LPIPS(net='alex')  # 使用AlexNet作为特征提取器
@@ -21,7 +22,8 @@ loss_fn_alex = lpips.LPIPS(net='alex')  # 使用AlexNet作为特征提取器
 # ========================
 SCALE = 4  # 超分倍数
 MODELS = [
-    'Bicubic' # 暂时只保留Bicubic，其他模型需要单独实现并导入
+    'RCAN', # 暂时只保留Bicubic，其他模型需要单独实现并导入
+    #'Bicubic' # 添加Bicubic模型，以便进行对比
     # 'SRCNN', 'FSRCNN', 'ESPCN', 'VDSR', 
     # 'RDN', 'RCAN', 'DRLN', 'SwinIR', 'HAN', 
     # 'IMDN', 'CARN', 'SRGAN', 'ESRGAN', 'SR3', 'ZSSR'
@@ -193,11 +195,13 @@ def apply_sr_model(img, model_name, scale):
     """根据模型名称应用超分辨率模型"""
     if model_name == 'Bicubic':
         return bicubic_upscale(img, scale)
+    elif model_name == 'RCAN':
+        return rcan_upscale(img, scale)
     elif model_name == 'SRCNN':
         raise NotImplementedError("SRCNN model is not yet implemented. Please implement it in a separate file.")
     # 添加其他模型的分支...
     else:
-        raise ValueError(f"Unsupported model name: {model_name}. Only 'Bicubic' is supported for now.")
+        raise ValueError(f"Unsupported model name: {model_name}. Only 'Bicubic' and 'RCAN' are supported for now.")
 
 def process_image_with_patches(lr_img, model_name, scale, patch_size, overlap_size):
     """使用 patch 处理图像并进行重叠融合"""
