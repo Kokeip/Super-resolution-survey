@@ -177,8 +177,7 @@ class RCAN(nn.Module):
 
 
 def rcan_upscale(lr_image_path, scale_factor=4):
-    # 定义模型路径
-    model_path = 'd:\\pycharm\\Super resolution\\model\\RCAN_BIX4.pt'
+    model_path = 'model/RCAN_BIX4.pt'
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     # 模型参数，这些参数需要与预训练模型匹配
